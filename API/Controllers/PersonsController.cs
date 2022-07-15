@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -38,6 +39,11 @@ namespace API.Controllers
         [HttpPost]
         public ActionResult<Person> CreatePerson(Person prs)
         {
+            // check IdNum null
+            if (prs.IdNum == "")
+            {
+                return BadRequest(new { success = "false", message = "מספר ת.ז שדה חובה!" });
+            }
             // check valid IdNum
             if (!IsValidIsraeliID(prs.IdNum))
             {
@@ -49,13 +55,33 @@ namespace API.Controllers
             {
                 return BadRequest(new { success = "false", message = "מספר ת.ז קיים במערכת!" });
             }
-
+            // check fullName null
+            if (prs.FullName == "")
+            {
+                return BadRequest(new { success = "false", message = "שדה שם מלא חובה!" });
+            }
+            // check fullName length
+            if (prs.FullName.Length > 20)
+            {
+                return BadRequest(new { success = "false", message = "שדה שם מלא ארוך מ20 תווים!" });
+            }
+            // check fullName valid
+            string pattern = @"^[a-z \u0590-\u05fe]+$";
+            Match m = Regex.Match(prs.FullName, pattern, RegexOptions.IgnoreCase);
+            if (!m.Success)
+            {
+                return BadRequest(new { success = "false", message = "שדה שם מלא מכיל תווים לא חוקיים!" });
+            }
+            // check birthDAte null
+            if(prs.BirthDate == null)
+            {
+                return BadRequest(new { success = "false", message = "שדה תאריך לידה חובה!" });
+            }
 
             _repository.CreatePerson(prs);
             _repository.SaveChanges();
 
             return CreatedAtRoute(nameof(GetPersonByIdNum), new { IdNum = prs.IdNum }, prs);
-            //return Ok(prs);
         }
 
         public static bool IsValidIsraeliID(string israeliID)
