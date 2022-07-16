@@ -1,5 +1,7 @@
 ﻿using API.Data;
+using API.Dtos;
 using API.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -14,10 +16,12 @@ namespace API.Controllers
     public class PersonsController : ControllerBase
     {
         private readonly IRepo _repository;
+        private readonly IMapper _mapper;
 
-        public PersonsController(IRepo repository)
+        public PersonsController(IRepo repository, IMapper mapper)
         {
             _repository = repository;
+            _mapper = mapper;
         }
         
 
@@ -37,46 +41,48 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Person> CreatePerson(Person prs)
+        public ActionResult<Person> CreatePerson(CreatePersonDto personDto)
         {
             // check IdNum null
-            if (prs.IdNum == "")
+            if (personDto.IdNum == "")
             {
                 return BadRequest(new { success = "false", message = "מספר ת.ז שדה חובה!" });
             }
             // check valid IdNum
-            if (!IsValidIsraeliID(prs.IdNum))
+            if (!IsValidIsraeliID(personDto.IdNum))
             {
                 return BadRequest(new { success = "false", message = "מספר ת.ז לא תקין!" });
             }
             // check uniqe IdNum
-            var prsExist = GetPersonByIdNum(prs.IdNum);
+            var prsExist = GetPersonByIdNum(personDto.IdNum);
             if(prsExist != null)
             {
                 return BadRequest(new { success = "false", message = "מספר ת.ז קיים במערכת!" });
             }
             // check fullName null
-            if (prs.FullName == "")
+            if (personDto.FullName == "")
             {
                 return BadRequest(new { success = "false", message = "שדה שם מלא חובה!" });
             }
             // check fullName length
-            if (prs.FullName.Length > 20)
+            if (personDto.FullName.Length > 20)
             {
                 return BadRequest(new { success = "false", message = "שדה שם מלא ארוך מ20 תווים!" });
             }
             // check fullName valid
             string pattern = @"^[a-z \u0590-\u05fe]+$";
-            Match m = Regex.Match(prs.FullName, pattern, RegexOptions.IgnoreCase);
+            Match m = Regex.Match(personDto.FullName, pattern, RegexOptions.IgnoreCase);
             if (!m.Success)
             {
                 return BadRequest(new { success = "false", message = "שדה שם מלא מכיל תווים לא חוקיים!" });
             }
             // check birthDAte null
-            if(prs.BirthDate == null)
+            if(personDto.BirthDate == null)
             {
                 return BadRequest(new { success = "false", message = "שדה תאריך לידה חובה!" });
             }
+
+            Person prs = _mapper.Map<Person>(personDto);
 
             _repository.CreatePerson(prs);
             _repository.SaveChanges();

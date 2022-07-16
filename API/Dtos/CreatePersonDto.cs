@@ -1,22 +1,17 @@
 ﻿using API.Helper;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace API.Models
+namespace API.Dtos
 {
-    public class Person
+    public class CreatePersonDto
     {
-        [Required]
-        [MaxLength(20)]
         public string FullName { get; set; }
-        [Required]
+        [JsonConverter(typeof(NullableDateTimeConverter))]
         public DateTime? BirthDate { get; set; }
-        [Key]
-        [MaxLength(9)]
-        public string IdNum {get;set;}
+        public string IdNum { get; set; }
     }
 }

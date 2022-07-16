@@ -54,3 +54,5 @@ C:\Users\Nimrod\Documents\meitav\API\obj\Debug\net5.0\API.dll
 C:\Users\Nimrod\Documents\meitav\API\obj\Debug\net5.0\ref\API.dll
 C:\Users\Nimrod\Documents\meitav\API\obj\Debug\net5.0\API.pdb
 C:\Users\Nimrod\Documents\meitav\API\obj\Debug\net5.0\API.genruntimeconfig.cache
+C:\Users\Nimrod\Documents\meitav\API\bin\Debug\net5.0\AutoMapper.dll
+C:\Users\Nimrod\Documents\meitav\API\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
